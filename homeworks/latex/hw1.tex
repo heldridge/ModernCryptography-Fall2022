@@ -1,0 +1,146 @@
+\documentclass[11pt]{article}
+\usepackage{url,amsmath,setspace,amssymb,fullpage,color}
+
+\newcommand{\heading}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox[\textwidth]{
+     \begin{minipage}{0.9\textwidth} \onehalfspacing
+       {\bf CS 601.442/642 -- Modern Cryptography} \hfill #2
+
+       {\centering \Large #5
+
+       }\medskip
+
+       {\it #3 \hfill #4}
+     \end{minipage}
+   }
+   \end{center}
+}
+
+\newcommand{\scribe}[4]{\heading{#1}{#2}{}{ #4}{ #3}}
+
+\newcommand{\proof}{{\bf Proof. }} %% To begin a proof write \proof
+\newcommand{\qed}{\mbox{}\hspace*{\fill}\nolinebreak\mbox{$\rule{0.6em}{0.6em}$}} %%to end your proof write $\qed$.
+\newcommand{\ma}{{\mathcal A}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\bibliographystyle{plain}
+
+\newcommand{\KeyGen}{{\sf KeyGen}}
+\newcommand{\Enc}{{\sf Enc}}
+\newcommand{\Dec}{{\sf Dec}}
+
+\begin{document}
+\include{localdefs}
+
+\scribe{1}{Instructor:
+Abhishek Jain}{Homework 1}{Deadline: September 14; 2022, 1:30 PM}
+
+\section*{Instructions}
+\begin{itemize}
+    \item The solutions must be submitted via Gradescope (entry code: \textbf{RZ733P})
+    \item You can either type your solutions using \LaTeX $ $ or submit a scanned copy of of handwritten solutions. 
+    In the case of the latter, please make sure your handwriting is legible. 
+    Please don't use text editors such as MS Word, Pages, Notepad, etc.
+    \item This homework is based on the topics covered in class on August 31st and September 7th.
+    Some terms might seem unfamiliar at first, but they will make sense after the class on Sept 7.
+    \item The final question is \textbf{extra credit}.
+    Completing it is not required.
+\end{itemize}
+
+\section*{Problems}
+\begin{enumerate}
+    \item (15 Points) There is nothing exclusively special about strings and XOR in one-time pad. 
+    We can get the same properties using integers {\sf mod} $n$ and addition {\sf mod} $n$.
+    This problem considers a variant of one-time pad, in which the keys, plaintexts, and ciphertexts are all elements of $\Z_n$ instead of $\zo^n$.
+    \begin{enumerate}
+        \item What is the decryption algorithm that corresponds to the following encryption algorithm?
+        $$
+            \Enc(k, m) : c = (k + m) \text{ {\sf mod} } n
+        $$
+        Show that the resulting scheme satisfies \textbf{correctness}
+        \item Show that the above scheme satisfies \textbf{one-time uniform ciphertext security}
+        \item It's not just the distribution of keys that is important. 
+        The way that the key is combined with the plaintext is also important. 
+        Show that a scheme with the following encryption algorithm does \textbf{not} satisfy \textbf{one-time uniform ciphertext security}
+        $$
+            \Enc(k, m): c = (k \cdot m) \text{ {\sf mod} } n
+        $$
+    \end{enumerate}
+
+    \item (10 Points) Alice is using one-time pad and notices that when her key is the all-zeroes string $k = 0^n$, then $\Enc(k, m) = m$ and her message is sent in the clear! 
+    To avoid this problem, she decides to modify $\KeyGen$ to exclude the all-zeroes key. 
+    She modifies $\KeyGen$ to choose a key uniformly from $\zo^n \backslash \{0^n\}$, the set of all $n$-bit strings except $0^n$ . 
+    In this way, she guarantees that her plaintext is never sent in the clear.
+    \begin{enumerate}
+        \item Describe an attack demonstrating that the modified scheme does \textbf{not} satisfy \textbf{one-time uniform ciphertext security}
+        \item Describe an attack demonstrating that the modified scheme does \textbf{not} satisfy \textbf{one-time perfect security}
+    \end{enumerate}
+
+
+    \item (10 Points) The following scheme encrypts a plaintext by simply reordering its bits, according to the
+    secret permutation $k$:
+
+    \framebox{
+        \begin{minipage}{0.9\textwidth}
+            \begin{equation*}
+                \begin{split}
+                    &\mathcal{K} = \{\text{ permutations of }\{1,...,n\}\}\\
+                    &\mathcal{M} = \zo^n\\
+                    &\mathcal{C} = \zo^n\\
+                    &\\
+                    &\underline{\KeyGen(1^n)}:\\
+                    &\hspace{4mm} k \leftarrow \mathcal{K} \\
+                    &\hspace{4mm}\text{return }k
+                \end{split}
+                \hspace{10mm}
+                \begin{split}     
+                    &\underline{\Enc(k, m)}: \\
+                    &\hspace{4mm}\text{for } i := 1\text{ to }n:\\
+                    &\hspace{8mm}c_{k(i)} := m_i\\
+                    &\hspace{4mm}\text{return }c_1...c_n\\
+                    &\\
+                    &\underline{\Dec(k, c)}: \\
+                    &\hspace{4mm}\text{for } i := 1\text{ to }n:\\
+                    &\hspace{8mm}m_i := c_{k(i)}\\
+                    &\hspace{4mm}\text{return }m_1...m_n\\
+                \end{split}
+            \end{equation*}
+        \end{minipage}
+    }
+
+    Describe an attack demonstrating that the scheme does \textbf{not} satisfy \textbf{one-time perfect security}.
+
+    \item (10 Points) Consider the following variant of one-time perfect security, where Eve can obtain two ciphertexts (on chosen plaintexts) encrypted under the same key, called \textbf{two-time perfect security}
+
+        \vspace{1mm}
+        \framebox{
+            \begin{minipage}{0.9\textwidth} 
+         We say that an encryption scheme is two-time perfectly secure if $\forall m_{11}, m_{12}, m_{21}, m_{22} \in \mathcal{M}$ chosen by Eve, the following distributions are identical:
+         
+         \begin{itemize}
+            \item $\mathcal{D}_1 := \{c_1 := \Enc(k, m_{11}), c_2 := \Enc(k, m_{12}); k \leftarrow {\sf KeyGen}(1^n)\}$
+            \item $\mathcal{D}_2 := \{c_1 := \Enc(k, m_{21}), c_2 := \Enc(k, m_{22}); k \leftarrow {\sf KeyGen}(1^n)\}$
+         \end{itemize}
+        \end{minipage}
+        }
+        \vspace{1mm}
+
+    Describe an attack demonstrating that one-time pad does \textbf{not} satisfy this security definition.
+
+    \item (15 Points) Let $\mathcal{E}_1 = (\KeyGen_1, \Enc_1, \Dec_1)$ and $\mathcal{E}_2 = (\KeyGen_2, \Enc_2, \Dec_2)$ be two encryption schemes such that only one of them satisfies one-time perfect security, \textbf{but you don't know which one}.
+    Using both $\mathcal{E}_1$ and $\mathcal{E}_2$ (but no other encryption scheme), construct an encryption scheme with one-time perfect security and prove its security. 
+
+    \item (extra credit, 15 Points) Prove that if an encryption scheme has $|\mathcal{K}| < |\mathcal{M}$ (i.e. there are fewer possible \textit{keys} than there are possible \textit{messages}), then it \textbf{cannot} satisfy \textbf{one-time perfect security}.
+    Try to structure your proof as an explicit attack on the scheme, i.e. a distinguisher between the distributions $\mathcal{D}_1$ and $\mathcal{D}_2$.
+
+    Hint: There is no restriction on the running time of the attacker. Exhaustive brute-force attacks are therefore valid.
+\end{enumerate}
+
+\end{document}
