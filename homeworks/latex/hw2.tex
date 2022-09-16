@@ -1,0 +1,87 @@
+\documentclass[11pt]{article}
+\usepackage{url,amsmath,setspace,amssymb,fullpage,color,varwidth,mdframed,mathtools}
+\usepackage{enumitem}
+
+\newcommand{\heading}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox[\textwidth]{
+     \begin{minipage}{0.9\textwidth} \onehalfspacing
+       {\bf CS 601.442/642 -- Modern Cryptography} \hfill #2
+
+       {\centering \Large #5
+
+       }\medskip
+
+       {\it #3 \hfill #4}
+     \end{minipage}
+   }
+   \end{center}
+}
+
+\newcommand{\scribe}[4]{\heading{#1}{#2}{}{ #4}{ #3}}
+
+\newcommand{\proof}{{\bf Proof. }} %% To begin a proof write \proof
+\newcommand{\qed}{\mbox{}\hspace*{\fill}\nolinebreak\mbox{$\rule{0.6em}{0.6em}$}} %%to end your proof write $\qed$.
+\newcommand{\ma}{{\mathcal A}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\bibliographystyle{plain}
+
+\begin{document}
+\scribe{1}{Instructor:
+Abhishek Jain}{Homework 2}{Deadline: September 28; 2022, 1:30PM EST}
+
+
+\section{Negligible Functions}
+\begin{enumerate}[label=(\alph*)]
+    \item (10 points) Prove that $2^{-\omega(\log n)}$ is a negligible function for any $n\in \mathbb{N}$.
+    \item (10 points) Give an example $f$ and $g$ which are both negligible, but where $f(n)/g(n)$ is not negligible.
+\end{enumerate}
+
+\section{Hybrid Lemma}
+\begin{itemize}[label=]
+    \item (10 points) For integers $a\leq b$, let $U_{a,b}$ denote the uniform distribution over the integers $x$, $a\leq x\leq b.$ Now consider the following two distributions:
+    \begin{enumerate}
+        \item $U_{0,2^n-1}$
+        \item $U_{2^n,2^{n+1}-1}$
+    \end{enumerate}
+    Consider the following proof via hybrid argument to establish that $U_{0,2^n-1}$ and $U_{2^n,2^{n+1}-1}$ are indistinguishable: 
+For $0\leq i\leq 2^n,$ let $H_i=U_{i,2^n-1+i}.$ Clearly, $H_0=U_{0,2^n-1}$ and $H_{2^n}=U_{2^n,2^{n+1}-1}.$ Also, for every $i,$ $H_i\approx H_{i+1}$ because they are statistically close. Therefore, $U_{0,2^n-1} \approx U_{2^n,2^{n+1}-1}$. 
+
+Is the above a valid proof? Explain your answer.   
+\end{itemize} 
+    
+\section{Pseudorandom Generators}
+
+\begin{enumerate}[label=(\alph*)]
+\item (10 points) Let $G_1$ and $G_2$ be PRGs. Is $G(s)=G_1(s)||G_2(s)$ also a PRG? Prove or give a counterexample.
+\item (10 points) Let $G:\{0,1\}^n\to\{0,1\}^{2n}$ be a PRG. Consider a function $H:\{0,1\}^n\to\{0,1\}^{4n}$ that works as follows:
+$$
+H(s): \text{First compute } s_1||s_2\coloneqq G(s) \text{, then compute and output } G(s_1)||G(s_2)  
+$$
+Is $H(\cdot)$ also a PRG? Prove or give a counterexample.
+\item (15 points) Let $G:\{0,1\}^n\to\{0,1\}^{3n}$ be a PRG. Consider a function $H:\{0,1\}^{2n}\to\{0,1\}^{4n}$ that works as follows:
+$$
+H(s_1||s_2): \text{First compute } x\coloneqq G(s_2) \text{, then output } s_1||x 
+$$
+
+Prove \textbf{via reduction} that $H(\cdot)$ is also a PRG.
+
+\end{enumerate}
+
+\section{One-Way Functions}
+Let $f: \{0,1\}^n \rightarrow \{0,1\}^n$ be any one-way function. Prove via reduction or disprove (by building an efficient inverter) each of the following statements.
+    \begin{enumerate}
+        \item (10 Points) Can a function that leaks some bits of the input still be a OWF? More precisely, let $f': \{0,1\}^{2n} \rightarrow \{0,1\}^{2n}$ be s.t. for every $x_1||x_2 \in\{0,1\}^{2n}$, $|x_1|=|x_2|$,\\ $f'(x_1||x_2)=f(x_1)||x_2$. Then is $f'$ also a one-way function?
+         \item (10 Points) Let $f': \{0,1\}^{2n} \rightarrow \{0,1\}^{n}$ be s.t. for every $x_1||x_2 \in\{0,1\}^{2n}$, $|x_1|=|x_2|$,\\ $f'(x_1||x_2)=f(x_1)\oplus x_2$. Then $f'$ is also a one-way function.
+    \end{enumerate}
+
+
+\end{document}
+
