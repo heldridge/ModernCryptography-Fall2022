@@ -1,0 +1,255 @@
+\documentclass[11pt]{article}
+\usepackage{url,amsmath,setspace,amssymb,fullpage,color}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{intersections}
+\usetikzlibrary{matrix,shapes,arrows,positioning,chains, calc}
+\usetikzlibrary{fit,shapes}
+
+\usepackage[
+n,
+operators,
+advantage,
+sets,
+adversary,
+landau,
+probability,
+notions,	
+logic,
+ff,
+mm,
+primitives,
+events,
+complexity,
+asymptotics,
+keys]{cryptocode}
+
+\usepackage{breqn}
+\newcommand{\heading}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox[\textwidth]{
+     \begin{minipage}{0.9\textwidth} \onehalfspacing
+       {\bf CS 601.442/642 -- Modern Cryptography} \hfill #2
+
+       {\centering \Large #5
+
+       }\medskip
+
+       {\it #3 \hfill #4}
+     \end{minipage}
+   }
+   \end{center}
+}
+
+\newcommand{\scribe}[4]{\heading{#1}{#2}{}{ #4}{ #3}}
+
+%\setlength{\parindent}{0in}
+\newcommand{\zo}{\lbrace 0,1\rbrace}
+\newcommand{\proof}{{\bf Proof. }} %% To begin a proof write \proof
+\newcommand{\qed}{\mbox{}\hspace*{\fill}\nolinebreak\mbox{$\rule{0.6em}{0.6em}$}} %%to end your proof write $\qed$.
+\newcommand{\ma}{{\mathcal A}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\bibliographystyle{plain}
+\renewcommand{\sample}{\xleftarrow{\$}}
+\begin{document}
+\scribe{1}{Instructor:
+Abhishek Jain}{Reduction Example}{}
+\section{Pseudorandom Generators}
+\subsection*{Problem}
+Let $G:\{0,1\}^n\to\{0,1\}^{3n}$ be a PRG. Consider a function $H:\{0,1\}^n\to\{0,1\}^{6n}$ that works as follows:
+$$
+H(s): \text{First compute } s_1||s_2||s_3\coloneqq G(s) \text{, then compute and output } G(s_1)||G(s_3)  
+$$
+% $$
+% H(s)= G(s_1)||G(s_2) \text{, where $s_1,s_2$ are computed as } s_1||s_2\coloneqq G(s) 
+% $$
+Prove via reduction that $H(\cdot)$ also a PRG.
+\subsection*{Solution}
+Consider the following hybrids:
+\begin{itemize}
+    \item $\mathcal{H}_0:$ $\{G(s_1)||G(s_3);s\sample\{0,1\}^n,s_1||s_2||s_3=G(s)\}$
+    \item $\mathcal{H}_1:$ $\{G(s_1)||G(s_3);s_1,s_3\sample\{0,1\}^{n}\}$
+    \item $\mathcal{H}_2:$ $\{G(s_1)||R_2;s_1\sample\{0,1\}^{n},R_2\sample\{0,1\}^{3n}\}$
+    \item $\mathcal{H}_3:$ $\{R_1||R_2;R_1,R_2\sample\{0,1\}^{3n}\}$
+\end{itemize}
+In order to show that $H(s)$ is a PRG, it suffices to show that $\mathcal{H}_0$ is indistinguishable from $\mathcal{H}_3$. Let us assume for the for the sake of contradiction that $\mathcal{H}_0\not\approx\mathcal{H}_3$. In other words, let us assume that there exists an adversary $\mathcal{A}$ who can distinguish between $\mathcal{H}_0$ and $\mathcal{H}_3$ with some non-negligible advantage $\mu(n)$. From hybrid lemma, it follows that there must exist $i\in\{0,1,2\}$, such that $\mathcal{A}$ can distinguish between $\mathcal{H}_i$ and $\mathcal{H}_{i+1}$ with non-negligible advantage at least $\mu(n)/4$. We now show that if this is the case, then there exists another adversary $\mathcal{B}$ that can break the security of PRG $G$.
+
+We argue this, by giving a proof via reduction for each $i\in\{0,1,2\}$. 
+
+\begin{enumerate}
+    \item Let $\mathcal{A}$ distinguish between $\mathcal{H}_0$ and $\mathcal{H}_{1}$ non-negligible advantage at least $\mu(n)/4$. We now construct another adversary $\mathcal{B}$ that breaks the security of $G$ as follows:
+
+ \begin{bbrenv}{A}
+		\begin{bbrbox}[name=$\bdv$, namepos=left]
+			\pseudocode{
+				y=G(s_1)\|G(s_3)\\
+			}
+			
+			\begin{bbrenv}{B}
+				
+				\begin{bbrbox}[name=$\adv$,minheight=3.3cm,xshift=4cm,namepos=left]
+					
+				\end{bbrbox}
+				
+				\bbrmsgspace{.3cm}
+				\bbrmsgto{top={$y$}}
+				\bbrmsgspace{1cm}
+				\bbrmsgfrom{top={$b'$}}
+				\bbrmsgtxt{\pseudocode{
+					\\
+				}}
+				
+				
+				
+			\end{bbrenv}
+			
+		\end{bbrbox}
+		
+				
+		\begin{bbrchallenger}{ChaA}[hdistance=3cm]
+			\begin{bbrbox}[name=\underline{ Challenger for $G$ }, minwidth=3cm, namepos=center]
+				\pseudocode{
+				b\sample\{0,1\} \\
+				\text{if }b=0\text{:}\\
+	                \hspace{0.5 cm} s\sample\{0,1\}^n\\
+					 \hspace{0.5 cm} s_1\|s_2\|s_3=G(s)\\
+					 \text{else:}\\
+					\hspace{0.5 cm} s_1\|s_2\|s_3\sample\{0,1\}^{3n}\\	\\
+					\\
+					\\
+				}
+			\end{bbrbox}
+		\end{bbrchallenger}
+		
+		
+		\bbrchallengerqryspace{1cm}
+		\bbrchallengerqryto{ length=6cm, top={$s_1\|s_2\|s_3$}}		
+		\bbrchallengerqryspace{3cm}
+		\bbrchallengerqryfrom{top=$b'$}
+	\end{bbrenv}
+	
+From the above reduction, it is clear that $\mathcal{B}$ has the same advantage in breaking $G$ as the advantage that $\mathcal{A}$ has in distinguishing between $\mathcal{H}_0$ and $\mathcal{H}_{1}$, which is at least $\mu(n)/4$. Since $\mu(n)/4$ is non-negligible, this would mean $\mathcal{B}$ can break $G$. However, we know that $G$ is a secure PRG, and hence, no such adversary can exist. Therefore our assumption was incorrect and $\mathcal{H}_0\approx\mathcal{H}_1$.
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+\item Let $\mathcal{A}$ distinguish between $\mathcal{H}_1$ and $\mathcal{H}_{2}$ non-negligible advantage at least $\mu(n)/4$. We now construct another adversary $\mathcal{B}$ that breaks the security of $G$ as follows:
+
+\begin{bbrenv}{A}
+		\begin{bbrbox}[name=$\bdv$, namepos=left]
+			\pseudocode{
+			    s_1\sample\{0,1\}^n\\
+				z=G(s_1)\|y\\
+			}
+			
+			\begin{bbrenv}{B}
+				
+				\begin{bbrbox}[name=$\adv$,minheight=3.3cm,xshift=4cm,namepos=left]
+					
+				\end{bbrbox}
+				
+				\bbrmsgspace{.3cm}
+				\bbrmsgto{top={$z$}}
+				\bbrmsgspace{1cm}
+				\bbrmsgfrom{top={$b'$}}
+				\bbrmsgtxt{\pseudocode{
+						\text{If } b'=0 \text{, set } b''=1 \\
+						  \text{Else if } b'=1 \text{, set } b''=2 
+				}}
+				
+				
+				
+			\end{bbrenv}
+			
+		\end{bbrbox}
+		
+				
+		\begin{bbrchallenger}{ChaA}[hdistance=3cm]
+			\begin{bbrbox}[name=\underline{ Challenger for $G$}, minwidth=3cm, namepos=center]
+				\pseudocode{
+				b\sample\{0,1\} \\
+				\text{if }b=0\text{:}\\
+	                \hspace{0.5 cm} s\sample\{0,1\}^n\\
+					 \hspace{0.5 cm} y=G(s)\\
+					 \text{else:}\\
+					\hspace{0.5 cm} y\sample\{0,1\}^{3n}\\	\\
+					\\
+					\\
+				}
+			\end{bbrbox}
+		\end{bbrchallenger}
+		
+		
+		\bbrchallengerqryspace{1cm}
+		\bbrchallengerqryto{ length=6cm, top={$y$}}		
+		\bbrchallengerqryspace{3cm}
+		\bbrchallengerqryfrom{top=$b''$}
+	\end{bbrenv}
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	From the above reduction, it is clear that $\mathcal{B}$ has the same advantage in breaking $G$ as the advantage that $\mathcal{A}$ has in distinguishing between $\mathcal{H}_1$ and $\mathcal{H}_{2}$, which is at least $\mu(n)/4$. Since $\mu(n)/4$ is non-negligible, this would mean $\mathcal{B}$ can break $G$. However, we know that $G$ is a secure PRG, and hence, no such adversary can exist. Therefore our assumption was incorrect and $\mathcal{H}_1\approx\mathcal{H}_2$.
+	
+\item Let $\mathcal{A}$ distinguish between $\mathcal{H}_2$ and $\mathcal{H}_{3}$ non-negligible advantage at least $\mu(n)/4$. We now construct another adversary $\mathcal{B}$ that breaks the security of $G$ as follows:
+
+\begin{bbrenv}{A}
+		\begin{bbrbox}[name=$\bdv$, namepos=left]
+			\pseudocode{
+			    R_2\sample\{0,1\}^{3n}\\
+				z=y\|R_2\\
+			}
+			
+			\begin{bbrenv}{B}
+				
+				\begin{bbrbox}[name=$\adv$,minheight=3.3cm,xshift=4cm,namepos=left]
+					
+				\end{bbrbox}
+				
+				\bbrmsgspace{.3cm}
+				\bbrmsgto{top={$z$}}
+				\bbrmsgspace{1cm}
+				\bbrmsgfrom{top={$b'$}}
+				\bbrmsgtxt{\pseudocode{
+						\text{If } b'=0 \text{, set } b''=2 \\
+						  \text{Else if } b'=1 \text{, set } b''=3 
+				}}
+				
+				
+				
+			\end{bbrenv}
+			
+		\end{bbrbox}
+		
+				
+		\begin{bbrchallenger}{ChaA}[hdistance=3cm]
+			\begin{bbrbox}[name=\underline{ Challenger for $G$}, minwidth=3cm, namepos=center]
+				\pseudocode{
+				b\sample\{0,1\} \\
+				\text{if }b=0\text{:}\\
+	                \hspace{0.5 cm} s\sample\{0,1\}^n\\
+					 \hspace{0.5 cm} y=G(s)\\
+					 \text{else:}\\
+					\hspace{0.5 cm} y\sample\{0,1\}^{3n}\\	\\
+					\\
+					\\
+				}
+			\end{bbrbox}
+		\end{bbrchallenger}
+		
+		
+		\bbrchallengerqryspace{1cm}
+		\bbrchallengerqryto{ length=6cm, top={$y$}}		
+		\bbrchallengerqryspace{3cm}
+		\bbrchallengerqryfrom{top=$b''$}
+	\end{bbrenv}
+	
+From the above reduction, it is clear that $\mathcal{B}$ has the same advantage in breaking $G$ as the advantage that $\mathcal{A}$ has in distinguishing between $\mathcal{H}_2$ and $\mathcal{H}_{3}$, which is at least $\mu(n)/4$. Since $\mu(n)/4$ is non-negligible, this would mean $\mathcal{B}$ can break $G$. However, we know that $G$ is a secure PRG, and hence, no such adversary can exist. Therefore our assumption was incorrect and $\mathcal{H}_2\approx\mathcal{H}_3$.
+\end{enumerate}
+
+We have shown that $\mathcal{H}_0\approx\mathcal{H}_1\approx\mathcal{H}_2\approx\mathcal{H}_3$. Hence, our assumption must be wrong and there does not exist any adversary $\mathcal{A}$ who can distinguish between $\mathcal{H}_2$ and $\mathcal{H}_{3}$ with non-negligible advantage $\mu(n)$. Hence $H(\cdot)$ is a secure PRG.
+
+\end{document}
+
