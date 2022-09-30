@@ -1,0 +1,96 @@
+\documentclass[11pt]{article}
+\usepackage{url,amsmath,setspace,amssymb,fullpage,color,varwidth,mdframed,mathtools}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{csquotes}
+
+\newcommand{\heading}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox[\textwidth]{
+     \begin{minipage}{0.9\textwidth} \onehalfspacing
+       {\bf CS 601.442/642 -- Modern Cryptography} \hfill #2
+
+       {\centering \Large #5
+
+       }\medskip
+
+       {\it #3 \hfill #4}
+     \end{minipage}
+   }
+   \end{center}
+}
+
+\newcommand{\scribe}[4]{\heading{#1}{#2}{}{ #4}{ #3}}
+
+%\setlength{\parindent}{0in}
+
+\newcommand{\proof}{{\bf Proof. }} %% To begin a proof write \proof
+\newcommand{\qed}{\mbox{}\hspace*{\fill}\nolinebreak\mbox{$\rule{0.6em}{0.6em}$}} %%to end your proof write $\qed$.
+\newcommand{\ma}{{\mathcal A}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\bibliographystyle{plain}
+
+\begin{document}
+\scribe{1}{Instructor:
+Abhishek Jain}{Homework 4}{Deadline: October 12; 2022, 1:30 PM EST}
+
+
+\section{Hard Core Predicate}
+
+\begin{enumerate}
+
+\item (10 points) Consider the following definition of a \textbf{2-bit hard core function}, which says that given the output of a OWF on an input $x$, it should be hard for the adversary to guess the 2-bit output of this hard core function on $x$:
+\begin{mdframed}
+A function $h:\{0,1\}^*\rightarrow\{0,1\}^2$ is a 2-bit hard-core function for $f(\cdot)$, if $h$ is efficiently computable given $x$ and there exists a negligible function $\nu$ s.t. for every non-uniform PPT adversary $\mathcal{A}$ and $\forall n\in\mathbb{N}$:
+$$
+\Pr\Big[x\leftarrow\{0,1\}^n: \mathcal{A}(1^n,f(x))=h(x)\Big]\leq\frac{1}{4}+\nu(n).
+$$
+\end{mdframed}
+Let $f:\{0,1\}^{2n}\to\{0,1\}^{2n}$ be a OWF. Then we know that $g(x,r)=(f(x),r)$, where $|x|=|r|$ is also a OWF. Explain using a counterexample that $h(x,r)=\langle x[0:n],r\rangle\|\langle x[n:2n],r\rangle$, where $x[0:n]$ (and resp. $x[n:2n]$) denote the first $n$ bits (and resp. last $n$ bits) of $x$, is \textbf{NOT} a 2-bit hard core function for $f$.
+\end{enumerate}
+
+\section{Pseudorandom Functions}
+\begin{enumerate}
+   \item (10 points) Let $\{f_k\}_k$ be a family of PRFs. Is $\{g_k\}_k$ also a family of PRFs, where \\$g_k(x)$ = $f_{k}(x)||f_{k}(\bar{x})$? Prove via reduction or give a counterexample.
+   \item (10 points) Let $\{f_k\}_k$ be a family of PRFs. Is $\{g_k\}_k$ also a family of PRFs, where \\$g_k(x)$ = $f_{k}(0||x)||f_{k}(1||x)$? Prove via reduction or give a counterexample.
+   \item (15 points) Let $\{f_k\}_{k\in\{0,1\}^n}$ be a family of PRFs, where $f_k:\{0,1\}^n\to\{0,1\}^n$. Let $g:\{0,1\}^n\to\{0,1\}^{2n}$ be a PRG. Show via reduction that $\{h_k\}_{k\in\{0,1\}^n}$, where $h_k(x)=g(f_k(x))$ is also a family of PRFs.
+\end{enumerate}
+
+\section{Discrete Log}
+
+\begin{enumerate}
+    \item (10 points) Let $(G, \cdot)$ be a cyclic group with generator $g$.
+    Suppose you are given $X \in G$. 
+    You are allowed to choose any $X' \neq X$ and learn the discrete log of $X'$ (with respect to base $g$).
+    Show that you can use this ability to learn the discrete log of $X$. 
+
+\end{enumerate}
+
+\section{Diffie Hellman}
+\begin{enumerate}
+    \item (10 points) Explain what is wrong with the following argument:
+    \begin{displayquote}
+        \textit{In Diffie-Hellman key agreement, Alice sends $A = g^a$ and Bob sends $B = g^b$. Their shared key is $g^{ab}$. To break the scheme, the eavesdropper can simply compute $A \cdot B = (g^a)\cdot(g^b) = g^{ab}$}
+    \end{displayquote}
+    \item (15 points) Let $G$ be a cyclic group of prime order $p$ with a generator $g$. 
+    Recall that Decisional Diffie Hellman (DDH) assumption states that for $a,b,r \xleftarrow{\$} \{0,\dotsc,p-1\}$, the following distributions are computationally indistinguishable:
+    $$
+    \{g,g^a,g^b,g^{a \cdot b}\}\approx_c\{g,g^a,g^b,g^r\}
+    $$
+    Prove that for $a_1,a_2,b,r_1,r_2\xleftarrow{\$} \{0,\dotsc,p-1\}$, the following two distributions are indistinguishable under the DDH assumption:
+    \begin{align*}
+        D_1 &= \{g,g^{a_1},g^{a_2},g^{a_1\cdot b},g^{a_2 \cdot b}\}\\
+        D_2 &= \{g,g^{a_1},g^{a_2},g^{r_1},g^{r_2}\}
+    \end{align*}
+    
+     
+\end{enumerate}
+
+\end{document}
