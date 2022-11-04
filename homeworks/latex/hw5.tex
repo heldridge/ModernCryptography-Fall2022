@@ -1,0 +1,115 @@
+\documentclass[11pt]{article}
+\usepackage{url,amsmath,setspace,amssymb,fullpage,color,varwidth,mdframed,mathtools}
+\usepackage{enumitem}
+\usepackage[n,advantage,operators,sets,adversary,landau,probability,notions,logic,ff,mm,primitives,events,complexity,asymptotics,keys]{cryptocode}
+\usepackage{xcolor}
+
+\newcommand{\heading}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox[\textwidth]{
+     \begin{minipage}{0.9\textwidth} \onehalfspacing
+       {\bf CS 601.442/642 -- Modern Cryptography} \hfill #2
+
+       {\centering \Large #5
+
+       }\medskip
+
+       {\it #3 \hfill #4}
+     \end{minipage}
+   }
+   \end{center}
+}
+
+\newcommand{\scribe}[4]{\heading{#1}{#2}{}{ #4}{ #3}}
+
+%\setlength{\parindent}{0in}
+
+\newcommand{\proof}{{\bf Proof. }} %% To begin a proof write \proof
+\newcommand{\qed}{\mbox{}\hspace*{\fill}\nolinebreak\mbox{$\rule{0.6em}{0.6em}$}} %%to end your proof write $\qed$.
+\newcommand{\ma}{{\mathcal A}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\bibliographystyle{plain}
+\renewcommand{\sample}{\xleftarrow{\$}}
+\newcommand{\Gen}{\mathsf{Gen}}
+\newcommand{\Enc}{\mathsf{Enc}}
+\newcommand{\Dec}{\mathsf{Dec}}
+%\newcommand{\sk}{\mathsf{sk}}
+%\newcommand{\pk}{\mathsf{pk}}
+\newcommand{\Sign}{\mathsf{Sign}}
+\newcommand{\Tag}{\mathsf{Tag}}
+\newcommand{\Verify}{\mathsf{Verify}}
+%\newcommand{\bin}{\{0,1\}}
+
+
+\begin{document}
+\scribe{1}{Instructor:
+Abhishek Jain}{Homework 5}{Deadline: November 16; 2022, 1:30 PM EST}
+
+\begin{enumerate}
+
+ \item {\bf (15 points) } Let $\Big\lbrace h_i : \bin^{2n} \mapsto \bin^n \Big\rbrace_{i \in \bin^n}$
+		 be a collision resistant hash function family that compresses $2n$ bits to $n$ bits. Show that for a randomly sampled $i$, $h_i$ is a \textbf{one-way function}. 
+
+\item {\bf (15 points)} In class, we saw the definition of single-value hiding commitment schemes. Consider the following definition of a \textbf{multi-value hiding} commitment scheme:
+
+\begin{mdframed}
+A commitment scheme is said to achieve multi-value hiding if 
+for every non-uniform PPT adversary $\mathcal{A}$, there exists a negligible function $\nu(\cdot)$ such that for any  $v_1^0,v_1^1,\ldots,v_\ell^0,v_\ell^1\in \bin^n$ chosen by the adversary $\mathcal{A}$, the probability that $\Pr[b'=b]\leq\frac{1}{2}+\nu(n)$, where $b,b'$ are as defined in the following game.  
+\begin{center}
+	\procedure{}{%
+			\underline{\textbf{Challenger}} \> \> \underline{\textbf{Adversary } {\cal A}}\\
+			\> \sendmessageleft*{\left((v_1^0,v_1^1),\cdots,(v_l^0,v_\ell^1)\right)} \>  \\
+			b \sample \bin \> \> \\
+			\forall i\in [\ell],~ r_i \sample \bin^n;\\ C_i = \textsf{Com}(v_i^b;r_i) \> \> \\
+			\> \sendmessageright*{(C_1,\cdots,C_n)} \>   \\
+			\> \sendmessageleft*{b'} \>  \\
+		}
+\end{center}
+\end{mdframed}
+
+Prove that any single-value hiding commitment scheme also satisfies multi-value hiding.
+
+\item {\bf (15 points)} Let $A \simeq B$ denote that graphs $A$ and $B$ are isomorphic to each other. Consider an NP language that consists of statements with 2 pairs of graphs, such that \textbf{at least one} of the pairs is isomorphic. Such a language can be formally defined as follows:
+$$ L = \left\lbrace \left( (G_0, G_1), (H_0, H_1)\right) ~\Big|~ (G_0 \simeq G_1) \vee (H_0 \simeq H_1) \right\rbrace$$
+Any \textbf{zero-knowledge} proof system for this language 
+must prevent the verifier from learning which of the two pairs are isomorphic and the permutation between the isomorphic pair(s). One such interactive zero-knowledge proof system can be constructed as follows: 
+\begin{mdframed}
+\textbf{Common Input:} $(G_0,G_1),(H_0,H_1)$
+
+\textbf{Prover's Private Input:} If $G_0\simeq G_1$, it has permutation $\pi_G$ such that $G_1=\pi_G(G_0)$. If $H_0\simeq H_1$, it has permutation $\pi_H$ such that $H_1=\pi_H(H_0)$.
+
+\textbf{Protocol:} Repeat the following procedure $n$ times using fresh randomness: 
+\begin{itemize}
+    \item \textbf{Prover:} Randomly choose bits $b_1\xleftarrow{\$} \{0,1\}$ and $b_2\xleftarrow{\$} \{0,1\}$ and permutations $\pi_1 \xleftarrow{\$} \Pi_n$ and $\pi_2 \xleftarrow{\$} \Pi_n$. It generates Graphs $G$ and $H$, such that, $G=\pi_1(G_{b_1})$ and $H=\pi_2(H_{b_2})$. Sends $G$ and $H$ to the verifier. 
+    \item \textbf{Verifier:} Randomly chooses bit $b\leftarrow \{0,1\}$ and sends it to the prover.
+    \item \textbf{Prover:} Chooses bits $b_1'$ and $b_2'$ such that if $(G_0\not\simeq G_1)$, then set $b_1'=b_1$ and set $b_2'=b\oplus b_1'$, and if instead $(H_0\not\simeq H_1)$, then set $b_2'=b_2$ and set $b_1'=b\oplus b_2'$ and if both pairs are isomorphic, then $b_1'$ and $b_2'$ can be chosen in any way ensuring $b=b_1'\oplus b_2'$. Computes $\pi_1'$ and $\pi_2'$ such that $G=\pi_1'(G_{b_1'})$ and $H=\pi_2'(H_{b_2'})$. Sends $b_1',b_2',\pi_1'$ and $\pi_2'$ to the verifier. 
+    \item \textbf{Verifier:} Verifies if $G=\pi_1'(G_{b_1'})$ and $H=\pi_2'(H_{b_2'})$. If both are equal then it accepts. 
+\end{itemize}
+\end{mdframed}
+Prove \textbf{completeness, soundness and zero-knowledge property} of this protocol.
+
+
+\textbf{Hint:} An interactive proof system for a related NP language $L = \left\lbrace \left( G_0, G_1\right) ~\Big|~ (G_0 \simeq G_1)  \right\rbrace$ is given in Section 10.6.1 of the lecture notes on the course website. The proof of completeness and soundness for this proof system appears on page 115 and the proof of zero-knowledge appears on page 117-118 in the notes. You may refer to that for help. 
+
+
+
+
+\item {\bf (10 points)} Let $L$ be an NP language with witness relation $R$ such that every statement $x \in L$ has at least two different witnesses. \textbf{Witness indistinguishability} is a property of proof systems for such languages, that ensures that the verifier does not learn which of the witnesses was used by the prover in the proof system. This property can be formally defined as follows: 
+
+\begin{mdframed}
+An interactive proof system $(P,V)$ for a language $L$ is called witness indistinguishable if for any triplet $(x,w_0,w_1)$ such that $R(x,w_0)=1$ and $R(x,w_1)=1$, and for any auxiliary input $z\in\{0,1\}^*$, the distributions $\lbrace \mathsf{View}_{V}(P(x,w_0)\xleftrightarrow{} V(x,z))\rbrace$ and $\lbrace \mathsf{View}_{V}(P(x,w_1)\xleftrightarrow{} V(x,z))\rbrace$ are computationally indistinguishable.
+\end{mdframed}
+
+Prove that any zero-knowledge proof system is also a witness indistinguishable proof system.
+
+
+
+\end{enumerate}
+\end{document}
