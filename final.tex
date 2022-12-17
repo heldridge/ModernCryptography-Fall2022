@@ -102,16 +102,6 @@ Consider the following key-exchange protocol:
 \end{enumerate}
 \textbf{Show that Alice and Bob output the same key. Show a concrete attack on the security of the scheme by an eavesdropping adversary.}
 
-\iffalse
-\item {\bf (10 points) Public Key Encryption:} Consider the following public-key encryption scheme. The public key is $(G, q, g, h)$, where $h=g^x$ and the secret key is $x$, generated exactly as in the Elgamal encryption scheme. In order to encrypt a bit $b$, the sender does the following:
-\begin{enumerate}
-    \item If $b=0$, then choose a random $y\sample \mathbb{Z}_q$ and compute $c_1 =g^y$ and $c_2 =h^y$. The ciphertext is $(c_1,c_2)$.
-    \item If $b = 1$, then choose independent random $y,z \sample \mathbb{Z}_q$, compute $c_1 = g^y$ and $c_2 = g^z$, and set the
-    ciphertext equal to $(c_1, c_2)$.
-\end{enumerate}
-\textbf{Show that it is possible to decrypt efficiently given knowledge of $x$. Prove that this encryption
-scheme is CPA-secure if the Decisional Diffie-Hellman problem is hard relative to $G$.}
-\fi
 
 \item {\bf (15 points) Digital Signatures:}
 Let $(\mathsf{Gen,Sign,Verify})$ be a UF-CMA secure digital signature scheme for signing $n$-bit messages, and let $H:\{0,1\}^*\to\{0,1\}^n$ be a collision-resistant hash function. Consider the following new signature scheme $(\mathsf{Gen',Sign',Verify'})$ for signing arbitrary-length messages:
