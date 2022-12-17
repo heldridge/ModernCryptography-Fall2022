@@ -1,0 +1,234 @@
+\documentclass[11pt]{article}
+\usepackage{url,amsmath,setspace,amssymb,fullpage,color,varwidth,mdframed,mathtools}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage[
+	n,
+	operators,
+	advantage,
+	sets,
+	adversary,
+	landau,
+	probability,
+	notions,	
+	logic,
+	ff,
+	mm,
+	primitives,
+	events,
+	complexity,
+	asymptotics,
+	keys]{cryptocode}
+
+\newgeometry{bottom=1.2cm, top=2cm}
+
+\newcommand{\heading}[5]{
+   \renewcommand{\thepage}{#1-\arabic{page}}
+   \noindent
+   \begin{center}
+   \framebox[\textwidth]{
+     \begin{minipage}{0.9\textwidth} \onehalfspacing
+       {\bf CS 601.442/642 -- Modern Cryptography} \hfill #2
+
+       {\centering \Large #5
+
+       }\medskip
+
+       {\it #3 \hfill #4}
+     \end{minipage}
+   }
+   \end{center}
+}
+
+\newcommand{\scribe}[4]{\heading{#1}{#2}{}{ #4}{ #3}}
+
+\newcommand{\proof}{{\bf Proof. }} %% To begin a proof write \proof
+\newcommand{\qed}{\mbox{}\hspace*{\fill}\nolinebreak\mbox{$\rule{0.6em}{0.6em}$}} %%to end your proof write $\qed$.
+\newcommand{\ma}{{\mathcal A}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\bibliographystyle{plain}
+% \newcommand{\sample}{\xleftarrow{\$}}
+\newcommand{\Gen}{\mathsf{Gen}}
+\newcommand{\Enc}{\mathsf{Enc}}
+\newcommand{\Dec}{\mathsf{Dec}}
+\newcommand{\alice}{\mathsf{Alice}}
+\newcommand{\bob}{\mathsf{Bob}}
+\newcommand{\computeAkey}{\mathsf{ComputeAliceKey}}
+\newcommand{\computeBkey}{\mathsf{ComputeBobKey}}
+\newcommand{\msg}{\mathsf{msg}}
+\newcommand{\out}{\mathsf{out}}
+\newcommand{\secParam}{\lambda}
+\newcommand{\ot}{\mathsf{OT}}
+
+\newcommand{\hmenote}[1]{{\color{orange} Harry: #1}}
+
+\begin{document}
+
+
+\scribe{1}{Instructor:
+Abhishek Jain}{Final Exam}{Deadline: December 21; 2022, 11:59 AM EST}
+
+\paragraph{Instructions}
+\begin{itemize}
+    \item All submissions must be made via Gradescope. No late submissions will be accepted.
+   \item Do not make public posts on Campuswire for the duration of this exam. You can still ask for clarifications via private posts on Campuswire.
+    \item Please add the following declaration on the first page of your submission: \begin{center}
+        \textit{``I have neither given nor received any unauthorized aid on this exam. I understand that this exam must be taken
+          without the aid of any other online resources \textbf{besides} the lecture slides/videos, resources posted on the course website and the handouts sent via email. The work contained herein is wholly my own.
+        I understand that violation of these rules, including using an unauthorized aid or collaborating with another person/student,
+         may result in my receiving a 0 on this exam.''}
+    \end{center}
+    
+    
+\end{itemize}
+
+
+\begin{enumerate}
+
+
+\item {\bf (10 points) Key-Exchange:} 
+Consider the following key-exchange protocol:
+\begin{enumerate}
+    \item Alice chooses $k,r\sample\{0,1\}^n$ at random, and sends $s=k\oplus r$ to Bob.
+    \item Bob chooses $t\sample\{0,1\}^n$ at random and sends $u=s\oplus t$ to Alice.
+    \item Alice computes $w =u \oplus r$ and sends $w$ to Bob.
+    \item Alice outputs $k$ and Bob computes $w \oplus t$.
+\end{enumerate}
+\textbf{Show that Alice and Bob output the same key. Show a concrete attack on the security of the scheme by an eavesdropping adversary.}
+
+\iffalse
+\item {\bf (10 points) Public Key Encryption:} Consider the following public-key encryption scheme. The public key is $(G, q, g, h)$, where $h=g^x$ and the secret key is $x$, generated exactly as in the Elgamal encryption scheme. In order to encrypt a bit $b$, the sender does the following:
+\begin{enumerate}
+    \item If $b=0$, then choose a random $y\sample \mathbb{Z}_q$ and compute $c_1 =g^y$ and $c_2 =h^y$. The ciphertext is $(c_1,c_2)$.
+    \item If $b = 1$, then choose independent random $y,z \sample \mathbb{Z}_q$, compute $c_1 = g^y$ and $c_2 = g^z$, and set the
+    ciphertext equal to $(c_1, c_2)$.
+\end{enumerate}
+\textbf{Show that it is possible to decrypt efficiently given knowledge of $x$. Prove that this encryption
+scheme is CPA-secure if the Decisional Diffie-Hellman problem is hard relative to $G$.}
+\fi
+
+\item {\bf (15 points) Digital Signatures:}
+Let $(\mathsf{Gen,Sign,Verify})$ be a UF-CMA secure digital signature scheme for signing $n$-bit messages, and let $H:\{0,1\}^*\to\{0,1\}^n$ be a collision-resistant hash function. Consider the following new signature scheme $(\mathsf{Gen',Sign',Verify'})$ for signing arbitrary-length messages:
+\begin{itemize}
+    \item $\mathsf{Gen'}(1^{n})$: $(sk,vk)\leftarrow\mathsf{Gen}(1^{\lambda})$ and output $(sk,vk)$.
+    \item $\mathsf{Sign'}(sk,m)$: Compute $\sigma \leftarrow \mathsf{Sign}(sk,H(m))$. Output $\sigma$.
+    \item $\mathsf{Ver'}(vk,m,\sigma)$: Output 1 if $\mathsf{Ver}(vk,H(m),\sigma)$ outputs 1, else output 0.
+\end{itemize}
+\textbf{ Prove that $(\mathsf{Gen',Sign',Verify'})$ is also a UF-CMA secure digital signature scheme.}
+
+\item {\bf (15 points) Oblivious Transfer and Public Key Encryption:} A two-message oblivious transfer between a receiver $R$ and a sender $S$ is defined by a tuple of 3 PPT algorithms $(\ot_R,\ot_S,\ot_\out)$.  The OT protocol works as follows (let $\secParam$ be the security parameter):
+\begin{enumerate}
+    \item \textbf{Receiver:} The receiver computes $(\msg_R,\rho)\gets\ot_R(1^\secParam, b)$, where $b\in\{0,1\}$ is the receiver’s input. It sends $\msg_R$ to the sender.
+    \item \textbf{Sender:} The sender computes $\msg_S\gets \ot_S(1^\secParam,\msg_R,(m_0, m_1))$, where $m_0,m_1 \in \{0, 1\}^*$ are the sender’s input. The sender sends $\msg_S$ to the receiver.
+    \item \textbf{Receiver's Output:} The receiver computes $m_b\gets\ot_\out(\rho,\msg_S)$. 
+\end{enumerate}
+This protocol satisfies the following properties:
+\begin{itemize}
+    \item \textbf{Correctness}:
+        For each $m_0,m_1\in\{0,1\}^*$, $b\in\{0,1\}$, it holds that
+        \[
+            \Pr\left[\begin{split}
+     (\rho,\msg_R)\gets\ot_R\left(1^\secParam,b\right)\\\msg_S\gets OT_S\left(1^\secParam,\msg_R,(m_0, m_1)\right)\end{split}\Biggm| \ot_\out\left(\rho,\msg_R,\msg_S\right) = m_b\right] = 1,
+        \]
+
+    \item \textbf{Security against Semi-Honest Sender}: It holds that, \begin{align*}
+            \left\{ (\msg^0_R,\rho^0) \gets \ot_R\left(1^\secParam,0\right)\Bigm|\msg^0_R  \right\} \approx_c \left\{ (\msg^1_R,\rho^1) \gets \ot_R\left(1^\secParam,1\right)\mid\msg^1_R  \right\}
+        \end{align*}
+    \item \textbf{Security against Semi-Honest Receiver}: It holds that for each  $b\in\{0,1\}$, $m_0,m_1,m_0',m_1'\in\{0,1\}^*$, and $m_b=m'_{b}$,
+     \begin{align*}
+            \left\{\ot_S\left(1^\secParam,\msg_R,(m_0, m_1)\right) \right\} {\approx}_c  \left\{ \ot_S\left(1^\secParam,\msg_R,(m'_0, m'_1)\right)\right\}
+        \end{align*}
+        where $(\msg_R,\rho) \gets OT_R(1^\secParam,b)$.
+\end{itemize}
+
+\textbf{Public-Key Encryption Scheme:} Now consider the following construction of a public-key encryption scheme:
+\begin{itemize}
+    \item $\mathsf{KeyGen}(1^\lambda)$: Compute $(\msg_R,\rho)\gets\ot_R(1^\secParam, b)$. Set $pk=\msg_R$ and $sk=\rho$. Output $(pk,sk)$.
+    \item $\mathsf{Enc}(pk,m)$: Compute $\msg_S\gets \ot_S(1^\secParam,pk,(m, m))$ and set $c=\msg_S$. Output ciphertext $c$.
+    \item $\mathsf{Dec}(sk,c)$: Compute and output $m\gets\ot_\out(sk,c)$.
+\end{itemize}
+
+\textbf{Prove that the above construction $(\mathsf{KeyGen},\Enc,\Dec)$ is an IND-CPA secure public-key encryption.
+}
+
+\item {\bf (10 points) Pseudo-random Functions} 
+Consider the following notion of ``Restricted PRFs'' consisting of three algorithms:
+	\begin{itemize}
+		\item $\mathsf{Gen}(1^n)$: is PPT algorithm that samples a PRF key $K \stackrel{\$}{\leftarrow} \{0,1\}^n$.
+		\item $\mathsf{Restrict}(K,x)$: is PPT algorithm that takes as input a PRF key $K$ and a point $x$ in the input space of the PRF and outputs a restricted key $K_x$.
+		\item $\mathsf{Eval}(K_x,x')$: is a deterministic polynomial time algorithm that takes as input a restricted key $K_x$ and an input $x'$ and outputs an element $y$.
+	\end{itemize}
+	We require two properties:
+	
+	\begin{itemize}
+		\item \emph{Restricted Correctness}: on any input point $x'\neq  x$, PRF evaluation using the restricted key $K_x$ yields the same result as PRF evaluation using the (unrestricted) key $K$.
+		\item \emph{Restricted Pseudorandomness}: the output of the PRF on input $x$ looks pseudorandom to any PPT adversary, even if the restricted key $K_x$ is given to the adversary.
+	\end{itemize}
+
+
+\textbf{Construction of Restricted PRF:}
+
+Recall the binary tree based construction of PRFs discussed in class. Let $G:\{0,\}^n\to\{0,1\}^{2n}$ be a length doubling pseudorandom generator. We can imagine $G(s)=G_0(s)\|G_1(s)$, where $G_0(s)$ simply outputs the first $n$-bits of $G(s)$ and $G_1(s)$ outputs the last $n$-bits of $G(s)$. Let $x=x_1\|x_2\|\ldots\|x_n$ be an $n$-bit input. As discussed in class, the PRF  $F_K(x)=G_{x_n}\left(G_{x_{n-1}}\left(\ldots\left(G_{x_1}(K)\right)\right)\right)$. 
+
+The PRF $F_K(x)$ can also be viewed as a binary tree of size $2^n$. The root corresponds to the PRF key $K$. The nodes at the first level are $K_0=G_0(K)$ and $K_1=G_1(K)$. Similarly, the nodes at the second level are $K_{00}=G_0(K_0)$, $K_{01}=G_1(K_0)$, $K_{10}=G_0(K_1)$ and $K_{11}=G_1(K_1)$. Nodes at the remaining levels can be defined in a similar way. The leaf nodes correspond to the outputs of the PRF.  
+
+A restricted PRF can also be designed based on the above tree as follows:  
+
+\begin{itemize}
+		\item $\mathsf{Gen}(1^n)$: Sample a random $K \stackrel{\$}{\leftarrow} \{0,1\}^n$.
+		\item $\mathsf{Restrict}(K,x)$: Let $x=x_1\|x_2\|\ldots\|x_n$ and let $\mathsf{Sibling}(y)$ denote the sibling of node $y$ in the above binary tree. $K_x=\mathsf{Sibling}(K_{x_1})\|\mathsf{Sibling}(K_{x_1x_2})\|\ldots\|\mathsf{Sibling}(K_{x_1\ldots x_n})\|x$
+		\item $\mathsf{Eval}(K_x,x')$: Parse $K_x=\mathsf{Sibling}(K_{x_1})\|\mathsf{Sibling}(K_{x_1x_2})\|\ldots\|\mathsf{Sibling}(K_{x_1\ldots x_n})\|x$. Let $x=x_1\|x_2\|\ldots\|x_n$ and  $x'=x'_1\|x'_2\|\ldots\|x'_n$. Find the largest $\ell$ such that $x_1\|x_2\|\ldots\|x_\ell=x'_1\|x'_2\|\ldots\|x'_\ell$. Output $G_{x'_n}\left(G_{x'_{n-1}}\left(\ldots\left(G_{x'_{\ell+2}}(\mathsf{Sibling}\left(K_{x_1\ldots x_{\ell+1})} \right)\right)\right)\right)$
+		
+	\end{itemize}
+In the above discussion we showed how to define the syntax and security of a PRF that is restricted on a single input and also gave a construction for such a PRF. We can also consider PRFs that are further restricted on more than 1 inputs. The syntax of $\mathsf{Restrict}$ and $\mathsf{Eval}$ algorithms for such PRFs and their correctness and pseudorandomness properties can be defined in a similar way.
+\begin{enumerate}
+    \item Show how you can restrict the key in the above tree-based construction such that the PRF is restricted on all inputs with a fixed 3-bit prefix, i.e., on inputs of the form $x=a_1\|a_2\|a_3\|x_4\|\ldots\|x_n$, where $a_1\|a_2\|a_3$ is a fixed value. 
+    \item Show how you can restrict the key in the above tree-based construction such that the PRF is restricted on all inputs $X\leq x\leq Y$, where $X<Y$ and $X,Y\in \{0,1\}^n$ are fixed values.
+\end{enumerate}
+
+\item {\bf (10 points) Hash Functions} We saw in the homework that an {\em order-preserving} encryption scheme would be hard to achieve. Here we will show something similar for \emph{hash functions}.
+Suppose a function $H : \bin^{2n} \mapsto\bin^n$ has the following property. For each $x,y\in\bin^{2n}$, if $x\leq y$, then $H(x)\leq H(y)$. Show that $H$ is not collision resistant (describe how to efficiently find a collision in such a function).
+
+\item  \textbf{(15 points) Zero-Knowledge} Consider the following protocol to prove that $x \in L$, for some language $L$. Let $R$ be a associated relation (viewed as a circuit) such that $R(x,w)=1$ if and only if $w$ is a witness for the fact that $x \in L$. Let $R(x, r, w)$ denote the circuit such that $R(x, w) = r$ if and only if $w$ is a valid witness.
+
+The verifier samples a random string $r$ and constructs a garbled version of the circuit $R(x, r, \cdot)$, with r and the statement $x$ fixed. It sends the garbled circuit to the prover. The prover and the verifier then run a series of OTs that allow the prover to learn the wire labels corresponding to $w$. The prover then uses the labels to evaluate the circuit, and sends the output to the verifier.
+Finally, the verifier accepts if it received $r$, and rejects otherwise.
+
+The full description is given below. For simplicity, assume that all valid witnesses are of the same length $\ell$. Let $w[i]$ deonte the $i$-th bit of a witness $w$. 
+	
+	\begin{center}
+		\fbox{%
+			\procedure{Protocol}{%
+				\underline{\textbf{\prover}(x,w)} \> \> \underline{\textbf{\verifier}(x)}\\
+                \> \> r \sample \lbrace 0, 1 \rbrace^\lambda \\
+                \> \> \left(\widetilde{R}, \lbrace k^i_0,k^i_1 \rbrace_{i \in [\ell]} \right) \leftarrow \textsf{Garble}\Big(R(x, r,\cdot)\Big) \\
+                \> \sendmessageleft*{\widetilde{R}} \\
+                \> \sendmessage*{<->}{top={{\>\text{For } i \in 0,\ldots,\ell:\\ \> ~~\text{Use OT so $P$ learns $k^i_{w[i]}$}}}, style={dashed}} \\
+                \text{Set }y \leftarrow {\sf Eval}(\widetilde{R}, \lbrace k^i_{w[i]} \rbrace_{i\in\ell}) \\
+                \> \sendmessageright*{y} \\
+                \> \> \text{ if } y = r\text{ then }{\sf Accept} \\
+                \> \> \text{else }{\sf Reject}
+			}
+		}
+		
+	\end{center}
+	
+	\begin{enumerate}
+        \item Prove that the above protocol satisfies correctness and soundness, with soundness error negligible in $\lambda$.
+        \item Explain why the above protocol is zero-knowledge for a \emph{semi-honest} verifier.
+        \item Explain why the above protocol is \textbf{not} zero-knowledge for a \emph{malicious} verifier.
+    \end{enumerate}
+
+    For (b) and (c), it is sufficient to explain in words why the above protocol is or is not zero-knowledge.
+    
+\end{enumerate}
+
+
+
+\end{document}
